@@ -94,5 +94,17 @@ public class EmployeeController {
 
     }
 
+    /**
+     * 启用/禁用员工账号
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    public Result enableOrDisable(@PathVariable Integer status,Long id){
+        employeeService.enableOrDisable(status,id);
+        return Result.success();
+    }
+
 
 }
