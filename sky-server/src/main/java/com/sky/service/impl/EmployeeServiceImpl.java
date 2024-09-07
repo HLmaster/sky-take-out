@@ -86,10 +86,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //设置账号状态，默认为1(正常)
         employee.setStatus(StatusConstant.ENABLE);
-        //设置账号创建/更新时间
-        LocalDateTime now = LocalDateTime.now();
-        employee.setCreateTime(now);
-        employee.setUpdateTime(now);
         //设置账号初始密码
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
         //设置账号创建/修改人
@@ -127,7 +123,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void enableOrDisable(Integer status, Long id) {
         Employee emp = Employee.builder()
                 .status(status)
-                .id(id).updateTime(LocalDateTime.now()).updateUser(BaseContext.getCurrentId()).build();
+                .id(id).build();
 
         employeeMapper.update(emp);
     }
@@ -152,9 +148,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void updateEmployee(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
-
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(BaseContext.getCurrentId());
 
         log.info("更新后员工信息为：{}", employee);
         employeeMapper.update(employee);
