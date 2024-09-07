@@ -160,7 +160,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.update(employee);
     }
 
-
+    /**
+     * 修改员工密码
+     * @param empId
+     * @param oldPassword
+     * @param newPassword
+     */
+    @Override
+    public void editPassword(Integer empId, String oldPassword, String newPassword) {
+        oldPassword = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
+        newPassword = DigestUtils.md5DigestAsHex(newPassword.getBytes());
+        employeeMapper.editPassword(empId,oldPassword,newPassword);
+    }
 
 
 }

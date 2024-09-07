@@ -131,5 +131,19 @@ public class EmployeeController {
         return Result.success();
     }
 
+    /**
+     * 修改员工密码
+     * @param empId
+     * @param oldPassword
+     * @param newPassword
+     * @return
+     */
+    //TODO 暂时无法从前端获得数据
+    @PutMapping("/editPassword")
+    public Result editPassword(Integer empId,String oldPassword,String newPassword) {
+        employeeService.editPassword(empId,oldPassword,newPassword);
+        return Result.success();
+    }
+
 
 }

@@ -51,5 +51,11 @@ public interface EmployeeService {
      */
     void updateEmployee(EmployeeDTO employeeDTO);
 
-
+    /**
+     * 修改员工密码
+     * @param empId
+     * @param oldPassword
+     * @param newPassword
+     */
+    void editPassword(Integer empId, String oldPassword, String newPassword);
 }
