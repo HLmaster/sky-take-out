@@ -16,15 +16,18 @@ import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -70,7 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     /**
-     * 员工登录
+     * 新增员工
      *
      * @param employeeDTO
      * @return
@@ -128,5 +131,36 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeMapper.update(emp);
     }
+
+    /**
+     * 根据id查找员工信息
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee getEmployee(Long id) {
+        Employee employee = employeeMapper.getEmployee(id);
+        return employee;
+    }
+
+    /**
+     * 修改员工消息
+     * @param employeeDTO
+     */
+    @Transactional
+    @Override
+    public void updateEmployee(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(BaseContext.getCurrentId());
+
+        log.info("更新后员工信息为：{}", employee);
+        employeeMapper.update(employee);
+    }
+
+
+
 
 }

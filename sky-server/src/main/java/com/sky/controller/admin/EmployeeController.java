@@ -13,6 +13,7 @@ import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -103,6 +104,30 @@ public class EmployeeController {
     @PostMapping("/status/{status}")
     public Result enableOrDisable(@PathVariable Integer status,Long id){
         employeeService.enableOrDisable(status,id);
+        return Result.success();
+    }
+
+    /**
+     * 根据id查找员工信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public Result<Employee> getEmployee(@PathVariable Long id){
+
+        Employee employee = employeeService.getEmployee(id);
+
+        return Result.success(employee);
+    }
+
+    /**
+     * 修改员工消息
+     * @param employeeDTO
+     * @return
+     */
+    @PutMapping()
+    public Result updateEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        employeeService.updateEmployee(employeeDTO);
         return Result.success();
     }
 

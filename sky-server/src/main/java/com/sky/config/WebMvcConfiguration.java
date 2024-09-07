@@ -46,6 +46,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * 通过knife4j生成接口文档
      * @return
      */
+
     @Bean
     public Docket docket() {
         ApiInfo apiInfo = new ApiInfoBuilder()
@@ -61,6 +62,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .build();
         return docket;
     }
+
 
     /**
      * 设置静态资源映射
