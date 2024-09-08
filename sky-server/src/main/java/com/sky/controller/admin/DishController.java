@@ -2,13 +2,14 @@ package com.sky.controller.admin;
 
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
-import com.sky.entity.Dish;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /*
 * 菜品管理
@@ -41,5 +42,16 @@ public class DishController {
     public Result<PageResult> page(DishPageQueryDTO dishPageQueryDTO) {
         PageResult pageResult = dishService.page(dishPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 菜品批量删除
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    public Result deleteDish(@RequestParam List<Long> ids) {
+        dishService.deleteDish(ids);
+        return Result.success();
     }
 }

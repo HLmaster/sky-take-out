@@ -2,12 +2,16 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -27,6 +31,8 @@ public class DishServiceImpl implements DishService {
     DishMapper dishMapper;
     @Autowired
     DishFlavorMapper dishFlavorMapper;
+    @Autowired
+    SetmealDishMapper setmealDishMapper;
 
     /**
      * 添加菜品
@@ -43,7 +49,7 @@ public class DishServiceImpl implements DishService {
         Long dishId = dish.getId();
         //向口味表插入口味数据
         List<DishFlavor> flavors = dishDTO.getFlavors();
-        if (flavors != null && flavors.size() > 0) {
+        if (flavors != null && !flavors.isEmpty()) {
             flavors.forEach(dishFlavor -> {
                 dishFlavor.setDishId(dishId);
             });
@@ -53,11 +59,38 @@ public class DishServiceImpl implements DishService {
 
     }
 
+    /**
+     * 菜品分页查询
+     * @param dishPageQueryDTO
+     * @return
+     */
     @Override
     public PageResult page(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(),dishPageQueryDTO.getPageSize());
 
         Page<DishVO> page = dishMapper.page(dishPageQueryDTO);
         return new PageResult(page.getTotal(),page.getResult());
+    }
+
+    /**
+     * 菜品批量删除
+     * @param ids
+     */
+    @Override
+    public void deleteDish(List<Long> ids) {
+        //判断当前菜品是否处于起售状态
+        for (Long id : ids) {
+            Dish dish = dishMapper.getById(id);
+            if (dish.getStatus().equals(StatusConstant.ENABLE)){
+                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            }
+        }
+        //判断当前菜品是否处于套餐中
+        List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishIds(ids);
+        if (setmealIds!=null && !setmealIds.isEmpty()){
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        }
+        dishMapper.deleteDish(ids);
+        dishFlavorMapper.deleteByDianId(ids);
     }
 }
