@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -77,6 +79,7 @@ public class DishServiceImpl implements DishService {
      * @param ids
      */
     @Override
+    @Transactional
     public void deleteDish(List<Long> ids) {
         //判断当前菜品是否处于起售状态
         for (Long id : ids) {
@@ -92,5 +95,48 @@ public class DishServiceImpl implements DishService {
         }
         dishMapper.deleteDish(ids);
         dishFlavorMapper.deleteByDianId(ids);
+    }
+
+    /**
+     * 根据id查找菜品及口味数据
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getDish(Long id) {
+        Dish dish = dishMapper.getById(id);
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
+
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+        dishVO.setFlavors(dishFlavors);
+
+        return dishVO;
+    }
+
+    /**
+     * 修改菜品
+     * @param dishDTO
+     */
+    @Override
+    //@Transactional
+    public void updateDish(DishDTO dishDTO) {
+        log.info("开始更新菜品业务");
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        List<DishFlavor> dishFlavors = dishDTO.getFlavors();
+
+        List<Long> ids = new ArrayList<>();
+        ids.add(dish.getId());
+
+
+        dishMapper.updateDish(dish);
+        dishFlavorMapper.deleteByDianId(ids);
+        if (dishFlavors!=null && !dishFlavors.isEmpty()){
+            dishFlavors.forEach(dishFlavor -> dishFlavor.setDishId(dish.getId()));
+            dishFlavorMapper.batchSave(dishFlavors);
+        }
+
+
     }
 }
